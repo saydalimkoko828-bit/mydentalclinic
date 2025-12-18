@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyDentalClinic</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#007aff">
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background:#f5f5f7; margin:0; padding:16px; }
+    h1 { text-align:center; }
+    .card { background:#fff; border-radius:16px; padding:16px; margin-bottom:16px; box-shadow:0 4px 10px rgba(0,0,0,0.08); }
+    input { width:100%; padding:10px; margin:6px 0; border-radius:10px; border:1px solid #ccc; }
+    button { width:100%; padding:12px; border:none; border-radius:12px; background:#007aff; color:#fff; font-size:16px; margin-top:8px; }
+    .patient { border-bottom:1px solid #eee; padding:8px 0; }
+    .total { font-weight:600; }
+  </style>
+</head>
+<body>
+<h1>🦷 MyDentalClinic</h1>
+
+<div class="card">
+  <input id="fio" placeholder="ФИО пациента">
+  <input id="phone" placeholder="Телефон">
+  <input id="procedure" placeholder="Процедура">
+  <input type="date" id="date">
+  <input type="time" id="time">
+  <input id="duration" placeholder="Длительность (мин)">
+  <input id="price" placeholder="К оплате (сум)">
+  <input id="paid" placeholder="Оплачено (сум)">
+  <button onclick="addPatient()">Добавить</button>
+</div>
+
+<div class="card">
+  <h3>Пациенты</h3>
+  <div id="list"></div>
+</div>
+
+<div class="card">
+  <h3>Касса</h3>
+  <div class="total" id="cash"></div>
+</div>
+
+<script>
+let patients = JSON.parse(localStorage.getItem('patients') || '[]');
+
+function addPatient(){
+  patients.push({
+    fio:fio.value, phone:phone.value, procedure:procedure.value,
+    date:date.value, time:time.value, duration:duration.value,
+    price:Number(price.value), paid:Number(paid.value)
+  });
+  localStorage.setItem('patients', JSON.stringify(patients));
+  render();
+}
+
+function render(){
+  let list=document.getElementById('list');
+  let cash=document.getElementById('cash');
+  list.innerHTML='';
+  let tp=0, tpaid=0;
+  patients.forEach(p=>{
+    tp+=p.price; tpaid+=p.paid;
+    list.innerHTML+=`<div class="patient">
+    <b>${p.fio}</b> (${p.phone})<br>
+    ${p.procedure}<br>
+    ${p.date} ${p.time}<br>
+    Оплата: ${p.paid}/${p.price}
+    </div>`;
+  });
+  cash.innerHTML=`Всего: ${tp}<br>Получено: ${tpaid}<br>Долг: ${tp-tpaid}`;
+}
+render();
+</script>
+</body>
+</html>
